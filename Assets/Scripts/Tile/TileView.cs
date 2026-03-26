@@ -12,6 +12,7 @@ public class TileView : MonoBehaviour
     int _x;
     int _y;
     bool _isFliped;
+    bool _isAnimating;
 
     void Start()
     {
@@ -39,13 +40,19 @@ public class TileView : MonoBehaviour
 
     public void OnClick()
     {
-        if(_isFliped) return;
-        GameManager.Instance.OnTileClicked(_x, _y, this);
+        if(_isFliped || _isAnimating) return;
+        GameManager.Instance.OnTileClicked(_x, _y, this, false);
+    }
+
+    public void OnRightClick()
+    {
+        if(_isFliped || _isAnimating) return;
+        GameManager.Instance.OnTileClicked(_x, _y, this, true);
     }
 
     void Highlight(bool isHovering)
     {
-        if(_isFliped) return;
+        if(_isFliped || _isAnimating) return;
         if (isHovering)
         {
             transform.localScale = _originalScale * 1.1f;
@@ -61,9 +68,11 @@ public class TileView : MonoBehaviour
     public void Click()
     {
         StopAllCoroutines();
+        _isAnimating = true;
         StartCoroutine(ClickAnimation());
         StartCoroutine(FlipAnimation());
         _isFliped = true;
+        _isAnimating = false;
     }
 
     IEnumerator ClickAnimation()
@@ -115,7 +124,7 @@ public class TileView : MonoBehaviour
         transform.localScale = new Vector3(0, originalScale.y, originalScale.z);
 
         //Fase  2: Se flag, troca o tile
-        //SwapVisual();
+        //if(isRightClick) SwapVisual();
 
         //Fase 3: vira
         Quaternion originalRotation = transform.localRotation;
@@ -149,7 +158,7 @@ public class TileView : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        GameObject newVisual = Instantiate(_tilePrefab1, transform);
+        GameObject newVisual = Instantiate(_tilePrefabFlag, transform);
         newVisual.transform.localPosition = Vector3.zero;
     }*/
 }

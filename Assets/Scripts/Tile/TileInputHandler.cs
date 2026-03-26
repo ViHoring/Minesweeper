@@ -35,6 +35,11 @@ public class TileInputHandler : MonoBehaviour
             {
                 tile.OnClick();
             }
+
+            if (tile != null && Input.GetMouseButtonDown(1))
+            {
+                tile.OnRightClick();
+            }
         }
         else
         {

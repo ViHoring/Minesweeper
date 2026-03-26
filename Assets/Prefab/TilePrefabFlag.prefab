@@ -387,6 +387,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 319c02fbd5fa88c4aaa04f8864223e5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileView
+  _tilePrefabFlag: {fileID: 4345220039003214436}
 --- !u!114 &881732328171900035
 MonoBehaviour:
   m_ObjectHideFlags: 0

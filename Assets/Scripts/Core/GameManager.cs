@@ -71,7 +71,6 @@ public class GameManager : MonoBehaviour
     {
         _config = config;
         SetState(GameState.Playing);
-        //_camera.transform.position = new Vector3(0, config.Height, -config.Height);
         float size = config.Height * 0.5f + 0.75f;
         _camera.orthographicSize = size;
         _boardController.CreateBlankBoard(config.Width, config.Height);
@@ -110,10 +109,11 @@ public class GameManager : MonoBehaviour
         
     }
 
-    public void OnTileClicked(int x, int y, TileView tileView)
+    public void OnTileClicked(int x, int y, TileView tileView, bool isRightClick)
     {
         if (_isFirstClick)
         {
+            if(isRightClick) return;
             _isFirstClick = false;
 
             FirstClick(x, y);
