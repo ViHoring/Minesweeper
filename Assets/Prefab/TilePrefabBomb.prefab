@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bf841bf2d352f5e4cb032916b76dcc90, type: 2}
+  - {fileID: 2100000, guid: a44981d0c9f06e04e9b511a0de89f0e9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -349,6 +349,7 @@ GameObject:
   - component: {fileID: 4058878778690574608}
   - component: {fileID: 6966377669307826110}
   - component: {fileID: 881732328171900035}
+  - component: {fileID: 6671600209821894587}
   m_Layer: 0
   m_Name: TilePrefabBomb
   m_TagString: Untagged
@@ -366,7 +367,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 1, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5950483751796478818}
@@ -398,3 +399,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 976e2f086c58bce4a8e6090635ceeff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TileInputHandler
+--- !u!65 &6671600209821894587
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4345220039003214436}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 0.22191589, z: 1}
+  m_Center: {x: 0, y: -0.00032935292, z: 0}

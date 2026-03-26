@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject _pauseMenu;
     [SerializeField] GameObject _gameOverMenu;
     [SerializeField] Camera _camera;
+    [SerializeField] BoardController _boardController;
+    bool _isFirstClick = true;
     public GameState CurrentState { get; private set; }
     public event Action<GameState> OnGameStateChanged;
     public static GameManager Instance { get; private set; }
@@ -66,10 +68,10 @@ public class GameManager : MonoBehaviour
     public void StartGame(BoardConfigSO config)
     {
         SetState(GameState.Playing);
-        _camera.transform.position = new Vector3(0, config.Height, -config.Height);
-        float size = Mathf.Max(config.Width, config.Height) * 0.6f + 1f;
+        //_camera.transform.position = new Vector3(0, config.Height, -config.Height);
+        float size = config.Height * 0.5f + 0.75f;
         _camera.orthographicSize = size;
-        //Manda criar board vazio
+        _boardController.CreateBlankBoard(config.Width, config.Height);
         //Espera primeiro click
     }
 
@@ -103,5 +105,24 @@ public class GameManager : MonoBehaviour
     void HandleWin()
     {
         
+    }
+
+    public void OnTileClicked(int x, int y, TileView tileView)
+    {
+        if (_isFirstClick)
+        {
+            _isFirstClick = false;
+
+            FirstClick(x, y);
+        }
+        else
+        {
+            tileView.Click();
+        }
+    }
+
+    void FirstClick(int x, int y)
+    {
+        _boardController.GenerateBoard(x, y);
     }
 }
