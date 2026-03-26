@@ -2,5 +2,10 @@ using UnityEngine;
 
 public class DifficultyButton : MonoBehaviour
 {
-    //Controla o botão de dificuldade
+    [SerializeField] private BoardConfigSO _config;
+
+    public void OnClick()
+    {
+        GameManager.Instance.StartGame(_config);
+    }
 }
