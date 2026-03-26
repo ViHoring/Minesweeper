@@ -59,7 +59,6 @@ public class TileView : MonoBehaviour
     {
         StopAllCoroutines();
         StartCoroutine(ClickAnimation());
-        StopAllCoroutines();
         StartCoroutine(FlipAnimation());
     }
 
@@ -115,7 +114,8 @@ public class TileView : MonoBehaviour
         //SwapVisual();
 
         //Fase 3: vira
-        transform.localRotation = Quaternion.Euler(0, 180f, 0);
+        Quaternion originalRotation = transform.localRotation;
+        transform.localRotation = originalRotation * Quaternion.Euler(0, 0, 180);
 
         //Fase 2: abre
         time = 0;
