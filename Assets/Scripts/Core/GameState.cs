@@ -1,7 +1,8 @@
-enum GameState
+public enum GameState
 {
     MainMenu,
     Playing,
-    GameOver,
+    Paused,
+    Lose,
     Win
 }

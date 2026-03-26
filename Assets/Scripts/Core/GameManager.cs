@@ -1,3 +1,5 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -7,6 +9,13 @@ public class GameManager : MonoBehaviour
     //Chama o BoardController
     //Dispara eventos globais
 
+    [SerializeField] GameObject _mainMenu;
+    [SerializeField] GameObject _hud;
+    [SerializeField] GameObject _pauseMenu;
+    [SerializeField] GameObject _gameOverMenu;
+    [SerializeField] Camera _camera;
+    public GameState CurrentState { get; private set; }
+    public event Action<GameState> OnGameStateChanged;
     public static GameManager Instance { get; private set; }
     void Awake()
     {
@@ -20,7 +29,78 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    public void SetState(GameState newState)
+    {
+        CurrentState = newState;
+        OnGameStateChanged?.Invoke(newState);
+
+        switch (newState)
+        {
+            case GameState.MainMenu:
+                HandleMainMenu();
+                break;
+
+            case GameState.Playing:
+                HandlePlaying();
+                break;
+            
+            case GameState.Paused:
+                HandlePaused();
+                break;
+
+            case GameState.Lose:
+                HandleLose();
+                break;
+
+            case GameState.Win:
+                HandleWin();
+                break;
+        }
+    }
+
+    void Start()
+    {
+        SetState(GameState.MainMenu);
+    }
+
     public void StartGame(BoardConfigSO config)
+    {
+        SetState(GameState.Playing);
+        _camera.transform.position = new Vector3(0, config.Height, -config.Height);
+        float size = Mathf.Max(config.Width, config.Height) * 0.6f + 1f;
+        _camera.orthographicSize = size;
+        //Manda criar board vazio
+        //Espera primeiro click
+    }
+
+    void HandleMainMenu()
+    {
+        _mainMenu.SetActive(true);
+        _hud.SetActive(false);
+        _pauseMenu.SetActive(false);
+        _gameOverMenu.SetActive(false);
+    }
+
+    void HandlePlaying()
+    {
+        _mainMenu.SetActive(false);
+        _hud.SetActive(true);
+        _pauseMenu.SetActive(false);
+        //voltar contagem de tempo   
+    }
+
+    void HandlePaused()
+    {
+        _pauseMenu.SetActive(true);
+        //parar contagem de tempo            
+    }
+
+    void HandleLose()
+    {
+        
+    }
+
+    void HandleWin()
     {
         
     }

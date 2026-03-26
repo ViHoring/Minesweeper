@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class DifficultyButton : MonoBehaviour
 {
-    [SerializeField] private BoardConfigSO _config;
+    [SerializeField] BoardConfigSO _config;
 
-    public void OnClick()
+    public void SetDifficulty()
     {
         GameManager.Instance.StartGame(_config);
     }
