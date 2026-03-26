@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Camera _camera;
     [SerializeField] BoardController _boardController;
     bool _isFirstClick = true;
+    BoardConfigSO _config;
     public GameState CurrentState { get; private set; }
     public event Action<GameState> OnGameStateChanged;
     public static GameManager Instance { get; private set; }
@@ -29,6 +30,7 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        Test();
     }
 
     public void SetState(GameState newState)
@@ -67,6 +69,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame(BoardConfigSO config)
     {
+        _config = config;
         SetState(GameState.Playing);
         //_camera.transform.position = new Vector3(0, config.Height, -config.Height);
         float size = config.Height * 0.5f + 0.75f;
@@ -123,6 +126,19 @@ public class GameManager : MonoBehaviour
 
     void FirstClick(int x, int y)
     {
-        _boardController.GenerateBoard(x, y);
+        _boardController.GenerateBoard(x, y, _config);
+    }
+
+
+    void Test()
+    {
+        int[,] test = new int[3,3];
+        for(int i = 0; i < 3;  i++)
+        {
+            for(int j = 0; j < 3;  j++)
+            {
+                Debug.Log(test[i, j]);
+            }
+        }
     }
 }
