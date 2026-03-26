@@ -11,6 +11,7 @@ public class TileView : MonoBehaviour
     Color _originalColor;
     int _x;
     int _y;
+    bool _isFliped;
 
     void Start()
     {
@@ -38,11 +39,13 @@ public class TileView : MonoBehaviour
 
     public void OnClick()
     {
+        if(_isFliped) return;
         GameManager.Instance.OnTileClicked(_x, _y, this);
     }
 
     void Highlight(bool isHovering)
     {
+        if(_isFliped) return;
         if (isHovering)
         {
             transform.localScale = _originalScale * 1.1f;
@@ -60,6 +63,7 @@ public class TileView : MonoBehaviour
         StopAllCoroutines();
         StartCoroutine(ClickAnimation());
         StartCoroutine(FlipAnimation());
+        _isFliped = true;
     }
 
     IEnumerator ClickAnimation()
