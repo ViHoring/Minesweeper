@@ -20,16 +20,11 @@ public class BoardController : MonoBehaviour
     }
 
     
-    public void GenerateBoard(int x, int y)
+    public void GenerateBoard(int x, int y, BoardConfigSO config)
     {
-        
+        BoardGenerator generator = new BoardGenerator();
+        int[,] boardRep = generator.GenerateBoard(x, y, config);
+        _boardView.UpdateBoardVisual(boardRep);
     }
-
-    //Converte Indice para matriz
-    /*int index = positions[i];
-    int x = index % width;
-    int y = index / width;
-    board[x, y].HasMine = true;*/
-
 
 }

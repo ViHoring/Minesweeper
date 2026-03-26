@@ -3,8 +3,8 @@ using UnityEngine;
 public class TileInputHandler : MonoBehaviour
 {
     //Detecta clique do jogador
-
-    [SerializeField] Camera _camera;
+    
+    Camera _camera;
     TileView _currentTile;
 
     void Start()
