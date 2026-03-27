@@ -18,12 +18,12 @@ public class TileView : MonoBehaviour
     bool _isFlaged;
     bool _isFlag;
 
-    void Start()
+    void Awake()
     {
         _originalScale = transform.localScale;
 
         _renderer = GetComponentInChildren<Renderer>();
-        _originalColor = _renderer.material.color;
+        if (_renderer != null) _originalColor = _renderer.material.color;
     }
 
     public void Init(int x, int y, bool isFlag)
