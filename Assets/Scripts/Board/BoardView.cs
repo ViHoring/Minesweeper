@@ -1,3 +1,4 @@
+using Unity.Collections;
 using UnityEngine;
 
 public class BoardView : MonoBehaviour
@@ -17,6 +18,7 @@ public class BoardView : MonoBehaviour
     [SerializeField] GameObject _tilePrefabBomb;
     [SerializeField] GameObject _tilePrefabFlag;
     GameObject[,] _tiles;
+    GameObject[,] _flags;
     int _width;
     int _height;
     float _offsetX;
@@ -36,12 +38,12 @@ public class BoardView : MonoBehaviour
         {
             for (int y = 0; y < _height; y++)
             {         
-                _tiles[x, y] = InstantiatePrefab(x, y, _tilePrefabBlank);
+                _tiles[x, y] = InstantiatePrefab(x, y, _tilePrefabBlank, false);
             }
         }
     }
 
-    GameObject InstantiatePrefab(int x, int y, GameObject prefab)
+    GameObject InstantiatePrefab(int x, int y, GameObject prefab, bool isFlag)
     {
 
         Vector3 position = new Vector3(
@@ -60,8 +62,9 @@ public class BoardView : MonoBehaviour
         TileView tileView = tile.GetComponent<TileView>();
         if (tileView != null)
         {
-            tileView.Init(x, y);
-        }        
+            tileView.Init(x, y, isFlag);
+        }
+
         return tile;
     }
 
@@ -78,7 +81,7 @@ public class BoardView : MonoBehaviour
                     Destroy(_tiles[x, y]);
                     GameObject prefab = GetPrefab(boardRep[x, y]);
 
-                    _tiles[x, y] = InstantiatePrefab(x, y, prefab);
+                    _tiles[x, y] = InstantiatePrefab(x, y, prefab, false);
                 }
             }
         }
@@ -100,6 +103,42 @@ public class BoardView : MonoBehaviour
             case 7: return _tilePrefab7;
             case 8: return _tilePrefab8;
             default: return _tilePrefabBlank;
+        }
+    }
+
+    public void ChangeToFlag(TileView tileView)
+    {
+        int x = tileView.X;
+        int y = tileView.Y;
+
+        if (_flags == null) _flags = new GameObject[_width, _height];
+
+        if (_flags[x, y] != null) return;
+
+        _flags[x, y] = InstantiatePrefab(x, y, _tilePrefabFlag, true);
+
+        TileView baseTileView = _tiles[x, y].GetComponent<TileView>();
+        if (baseTileView != null)
+        {
+            baseTileView.SetFlagged(true);
+        }
+    }
+
+    public void RemoveFlag(TileView tileView)
+    {
+        int x = tileView.X;
+        int y = tileView.Y;
+
+        if (_flags != null && _flags[x, y] != null)
+        {
+            Destroy(_flags[x, y]);
+            _flags[x, y] = null;
+        }
+
+        TileView baseTileView = _tiles[x, y].GetComponent<TileView>();
+        if (baseTileView != null)
+        {
+            baseTileView.SetFlagged(false);
         }
     }
 }

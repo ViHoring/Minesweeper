@@ -30,7 +30,6 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        Test();
     }
 
     public void SetState(GameState newState)
@@ -120,25 +119,22 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            if (isRightClick)
+            {
+                _boardController.ChangeToFlag(tileView);
+                return;
+            }
             tileView.Click();
         }
+    }
+
+    public void RemoveFlag(TileView tileView)
+    {
+        _boardController.RemoveFlag(tileView);
     }
 
     void FirstClick(int x, int y)
     {
         _boardController.GenerateBoard(x, y, _config);
-    }
-
-
-    void Test()
-    {
-        int[,] test = new int[3,3];
-        for(int i = 0; i < 3;  i++)
-        {
-            for(int j = 0; j < 3;  j++)
-            {
-                Debug.Log(test[i, j]);
-            }
-        }
     }
 }

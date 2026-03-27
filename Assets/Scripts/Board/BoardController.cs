@@ -15,7 +15,7 @@ public class BoardController : MonoBehaviour
     {
         _width = width;
         _height = height;
-        TileModel[,] _board = new TileModel[_width, _height];
+        _board = new TileModel[_width, _height];
         _boardView.CreateBlankBoard(_board);
     }
 
@@ -25,6 +25,16 @@ public class BoardController : MonoBehaviour
         BoardGenerator generator = new BoardGenerator();
         int[,] boardRep = generator.GenerateBoard(x, y, config);
         _boardView.UpdateBoardVisual(boardRep);
+    }
+
+    public void ChangeToFlag(TileView tileView)
+    {
+        _boardView.ChangeToFlag(tileView);
+    }
+
+    public void RemoveFlag(TileView tileView)
+    {
+        _boardView.RemoveFlag(tileView);
     }
 
 }
