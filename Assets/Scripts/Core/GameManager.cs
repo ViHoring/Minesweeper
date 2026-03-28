@@ -21,9 +21,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] BoardController _boardController;
     [SerializeField] GameObject _hudEdgeR;
     [SerializeField] GameObject _hudEdgeL;
+    [SerializeField] TMP_Text _timerText;
     bool _isFirstClick = true;
     BoardConfigSO _config;
     int _totalTiles;
+    float _elapsedTime;
     public GameState CurrentState { get; private set; }
     public event Action<GameState> OnGameStateChanged;
     public static GameManager Instance { get; private set; }
@@ -73,6 +75,14 @@ public class GameManager : MonoBehaviour
         SetState(GameState.MainMenu);
     }
 
+    void Update()
+    {
+        if (CurrentState != GameState.Playing) return;
+
+        _elapsedTime += Time.deltaTime;
+        UpdateTimerUI();
+    }
+
     public void StartGame(BoardConfigSO config)
     {
         _config = config;
@@ -87,6 +97,8 @@ public class GameManager : MonoBehaviour
         _boardController.CreateBlankBoard(config.Width, config.Height);
         _totalTiles = config.Width * config.Height;
         //Espera primeiro click
+        _elapsedTime = 0f;
+        UpdateTimerUI();
     }
 
     void HandleMainMenu()
@@ -102,13 +114,11 @@ public class GameManager : MonoBehaviour
         _mainMenu.SetActive(false);
         _hud.SetActive(true);
         _pauseMenu.SetActive(false);
-        //voltar contagem de tempo   
     }
 
     void HandlePaused()
     {
-        _pauseMenu.SetActive(true);
-        //parar contagem de tempo            
+        _pauseMenu.SetActive(true);  
     }
 
     void HandleLose()
@@ -171,12 +181,35 @@ public class GameManager : MonoBehaviour
 
     public void Pause()
     {
-        
+        SetState(GameState.Paused);
+    }
+
+    public void Unpause()
+    {
+        SetState(GameState.Playing);
     }
 
     public void Hide()
     {
         
+    }
+
+    void UpdateTimerUI()
+    {
+        int totalSeconds = Mathf.FloorToInt(_elapsedTime);
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+
+        _timerText.text = $"{minutes:00}:{seconds:00}";
+    }
+
+    public void QuitGame()
+    {
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
     }
 
 }
