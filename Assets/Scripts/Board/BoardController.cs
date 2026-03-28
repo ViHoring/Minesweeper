@@ -64,6 +64,22 @@ public class BoardController : MonoBehaviour
         int y = tileView.Y;
 
         if(tileView.IsBomb) GameManager.Instance.BombClicked();
+        if(tileView.IsBlank) BlankTileClicked(tileView);
     }
 
+    void BlankTileClicked(TileView tileView)
+    {
+        int x = tileView.X;
+        int y = tileView.Y;
+        for(int i = x - 1; i <= x + 1; i++)
+        {
+            for(int j = y - 1; j <= y + 1; j++)
+            {
+                if (i >= 0 && i < _width && j >= 0 && j < _height)
+                {
+                    _boardObject[i, j].GetComponent<TileView>().OnClick();
+                }
+            }
+        }
+    }
 }

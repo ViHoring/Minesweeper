@@ -20,6 +20,7 @@ public class TileView : MonoBehaviour
     bool _isFlaged;
     bool _isFlag;
     bool _isBomb; public bool IsBomb => _isBomb;
+    bool _isBlank; public bool IsBlank => _isBlank;
 
     void Awake()
     {
@@ -29,12 +30,13 @@ public class TileView : MonoBehaviour
         if (_renderer != null) _originalColor = _renderer.material.color;
     }
 
-    public void Init(int x, int y, bool isFlag, bool isBomb)
+    public void Init(int x, int y, bool isFlag, bool isBomb, bool isBlank)
     {
         _x = x;
         _y = y;
         _isFlag = isFlag;
         _isBomb = isBomb;
+        _isBlank = isBlank;
     }
 
     public void OnHoverEnter()
@@ -95,6 +97,7 @@ public class TileView : MonoBehaviour
     public void Click()
     {
         if (_isAnimating || _isFliped) return;
+        _isFliped = true;
         OnRevealFinished?.Invoke(this);
         StartCoroutine(ClickRoutine());
     }
@@ -106,7 +109,7 @@ public class TileView : MonoBehaviour
         yield return StartCoroutine(ClickAnimation());
         yield return StartCoroutine(FlipAnimation());
 
-        _isFliped = true;
+        
         _isAnimating = false;
     }
 

@@ -54,9 +54,9 @@ public class BoardGenerator
     void CreatePositionsToExclude(int x, int y)
     {
         _positionsToExclude = new List<int>();
-        for(int i = -_poolSize; i <= _poolSize; i++)
+        for(int i = - _poolSize; i <= _poolSize; i++)
         {
-            for(int j = -_poolSize; j <= _poolSize; j++)
+            for(int j = - _poolSize; j <= _poolSize; j++)
             {
                 //Para garantir que não está fora do board:
                 int nx = x - i;

@@ -39,12 +39,12 @@ public class BoardView : MonoBehaviour
         {
             for (int y = 0; y < _height; y++)
             {         
-                _tiles[x, y] = InstantiatePrefab(x, y, _tilePrefabBlank, false, false);
+                _tiles[x, y] = InstantiatePrefab(x, y, _tilePrefabBlank, false, false, true);
             }
         }
     }
 
-    GameObject InstantiatePrefab(int x, int y, GameObject prefab, bool isFlag, bool isBomb)
+    GameObject InstantiatePrefab(int x, int y, GameObject prefab, bool isFlag, bool isBomb, bool isBlank)
     {
 
         Vector3 position = new Vector3(
@@ -63,7 +63,7 @@ public class BoardView : MonoBehaviour
         TileView tileView = tile.GetComponent<TileView>();
         if (tileView != null)
         {
-            tileView.Init(x, y, isFlag, isBomb);
+            tileView.Init(x, y, isFlag, isBomb, isBlank);
         }
 
         return tile;
@@ -86,7 +86,7 @@ public class BoardView : MonoBehaviour
 
                     if(boardRep[x, y] == -1) isBomb = true;
 
-                    _tiles[x, y] = InstantiatePrefab(x, y, prefab, false, isBomb);
+                    _tiles[x, y] = InstantiatePrefab(x, y, prefab, false, isBomb, false);
                 }
             }
         }
@@ -121,7 +121,7 @@ public class BoardView : MonoBehaviour
 
         if (_flags[x, y] != null) return;
 
-        _flags[x, y] = InstantiatePrefab(x, y, _tilePrefabFlag, true, false);
+        _flags[x, y] = InstantiatePrefab(x, y, _tilePrefabFlag, true, false, false);
 
         TileView baseTileView = _tiles[x, y].GetComponent<TileView>();
         if (baseTileView != null)
