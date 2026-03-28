@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -5,7 +6,8 @@ public class TileView : MonoBehaviour
 {
     //Representação visual do tile
     //Controla animações
-
+    
+    public event Action<TileView> OnRevealFinished;
     Vector3 _originalScale;
     Renderer _renderer;
     Color _originalColor;
@@ -17,6 +19,7 @@ public class TileView : MonoBehaviour
     bool _isAnimating;
     bool _isFlaged;
     bool _isFlag;
+    bool _isBomb; public bool IsBomb => _isBomb;
 
     void Awake()
     {
@@ -26,11 +29,12 @@ public class TileView : MonoBehaviour
         if (_renderer != null) _originalColor = _renderer.material.color;
     }
 
-    public void Init(int x, int y, bool isFlag)
+    public void Init(int x, int y, bool isFlag, bool isBomb)
     {
         _x = x;
         _y = y;
         _isFlag = isFlag;
+        _isBomb = isBomb;
     }
 
     public void OnHoverEnter()
@@ -91,6 +95,7 @@ public class TileView : MonoBehaviour
     public void Click()
     {
         if (_isAnimating || _isFliped) return;
+        OnRevealFinished?.Invoke(this);
         StartCoroutine(ClickRoutine());
     }
 

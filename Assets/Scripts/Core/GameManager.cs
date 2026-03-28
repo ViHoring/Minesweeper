@@ -1,6 +1,8 @@
 using System;
+using Unity.VectorGraphics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -100,7 +102,7 @@ public class GameManager : MonoBehaviour
 
     void HandleLose()
     {
-        
+        _gameOverMenu.SetActive(true);
     }
 
     void HandleWin()
@@ -124,8 +126,8 @@ public class GameManager : MonoBehaviour
                 _boardController.ChangeToFlag(tileView);
                 return;
             }
-            tileView.Click();
         }
+        tileView.Click();
     }
 
     public void RemoveFlag(TileView tileView)
@@ -137,4 +139,16 @@ public class GameManager : MonoBehaviour
     {
         _boardController.GenerateBoard(x, y, _config);
     }
+
+    public void BombClicked()
+    {
+        SetState(GameState.Lose);
+    }
+
+    public void RestartGame()
+    {
+        Destroy(GameManager.Instance.gameObject);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
 }

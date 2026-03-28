@@ -1,3 +1,4 @@
+using System;
 using Unity.Collections;
 using UnityEngine;
 
@@ -38,12 +39,12 @@ public class BoardView : MonoBehaviour
         {
             for (int y = 0; y < _height; y++)
             {         
-                _tiles[x, y] = InstantiatePrefab(x, y, _tilePrefabBlank, false);
+                _tiles[x, y] = InstantiatePrefab(x, y, _tilePrefabBlank, false, false);
             }
         }
     }
 
-    GameObject InstantiatePrefab(int x, int y, GameObject prefab, bool isFlag)
+    GameObject InstantiatePrefab(int x, int y, GameObject prefab, bool isFlag, bool isBomb)
     {
 
         Vector3 position = new Vector3(
@@ -62,14 +63,15 @@ public class BoardView : MonoBehaviour
         TileView tileView = tile.GetComponent<TileView>();
         if (tileView != null)
         {
-            tileView.Init(x, y, isFlag);
+            tileView.Init(x, y, isFlag, isBomb);
         }
 
         return tile;
     }
 
-    public void UpdateBoardVisual(int[,] boardRep)
+    public GameObject[,] UpdateBoardVisual(int[,] boardRep)
     {
+        bool isBomb = false;
         //Percorre a matriz boardRep, se -1 é bomba, 0 é blank, número maior que zero é número correspondente:
         for(int x = 0; x < _width; x++)
         {
@@ -78,13 +80,17 @@ public class BoardView : MonoBehaviour
                 //Se não for vazio:
                 if(boardRep[x, y] != 0)
                 {
+                    isBomb = false;
                     Destroy(_tiles[x, y]);
                     GameObject prefab = GetPrefab(boardRep[x, y]);
 
-                    _tiles[x, y] = InstantiatePrefab(x, y, prefab, false);
+                    if(boardRep[x, y] == -1) isBomb = true;
+
+                    _tiles[x, y] = InstantiatePrefab(x, y, prefab, false, isBomb);
                 }
             }
         }
+        return _tiles;
     }
 
     GameObject GetPrefab(int value)
@@ -115,7 +121,7 @@ public class BoardView : MonoBehaviour
 
         if (_flags[x, y] != null) return;
 
-        _flags[x, y] = InstantiatePrefab(x, y, _tilePrefabFlag, true);
+        _flags[x, y] = InstantiatePrefab(x, y, _tilePrefabFlag, true, false);
 
         TileView baseTileView = _tiles[x, y].GetComponent<TileView>();
         if (baseTileView != null)
