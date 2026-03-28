@@ -64,7 +64,8 @@ public class BoardController : MonoBehaviour
         int y = tileView.Y;
 
         if(tileView.IsBomb) GameManager.Instance.BombClicked();
-        if(tileView.IsBlank) BlankTileClicked(tileView);
+        else if(tileView.IsBlank) BlankTileClicked(tileView);
+        else BoardStatusUpdate();
     }
 
     void BlankTileClicked(TileView tileView)
@@ -81,5 +82,19 @@ public class BoardController : MonoBehaviour
                 }
             }
         }
+        BoardStatusUpdate();
+    }
+
+    void BoardStatusUpdate()
+    {
+        int revealedTiles = 0;
+        for(int i = 0; i < _width; i++)
+        {
+            for(int j = 0; j < _height; j++)
+            {
+                if(_boardObject[i, j].GetComponent<TileView>().IsRevealed) revealedTiles++;
+            }
+        }
+        GameManager.Instance.CheckForVictory(revealedTiles);
     }
 }

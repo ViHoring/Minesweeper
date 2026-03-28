@@ -970,7 +970,7 @@ GameObject:
   - component: {fileID: 984100015}
   - component: {fileID: 984100014}
   m_Layer: 5
-  m_Name: Tile
+  m_Name: GameOverMSG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1433,6 +1433,7 @@ MonoBehaviour:
   _hud: {fileID: 1081025574}
   _pauseMenu: {fileID: 1873424940}
   _gameOverMenu: {fileID: 388064565}
+  _gameOverMsg: {fileID: 984100014}
   _camera: {fileID: 330585545}
   _boardController: {fileID: 589641135}
 --- !u!4 &1097629203
@@ -2159,7 +2160,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000061035, y: 0}
+  m_AnchoredPosition: {x: 0.000061035156, y: 0}
   m_SizeDelta: {x: 0.0001, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1788672366
@@ -2815,7 +2816,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1097629202}
         m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: Retry
+        m_MethodName: RestartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2843,7 +2844,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 420, y: 60}
+  m_SizeDelta: {x: 240, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &9098937655539053135
 RectTransform:

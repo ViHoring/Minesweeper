@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using Unity.VectorGraphics;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -15,10 +16,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject _hud;
     [SerializeField] GameObject _pauseMenu;
     [SerializeField] GameObject _gameOverMenu;
+    [SerializeField] TMP_Text _gameOverMsg;
     [SerializeField] Camera _camera;
     [SerializeField] BoardController _boardController;
     bool _isFirstClick = true;
     BoardConfigSO _config;
+    int _totalTiles;
     public GameState CurrentState { get; private set; }
     public event Action<GameState> OnGameStateChanged;
     public static GameManager Instance { get; private set; }
@@ -75,6 +78,7 @@ public class GameManager : MonoBehaviour
         float size = config.Height * 0.5f + 0.75f;
         _camera.orthographicSize = size;
         _boardController.CreateBlankBoard(config.Width, config.Height);
+        _totalTiles = config.Width * config.Height;
         //Espera primeiro click
     }
 
@@ -103,11 +107,13 @@ public class GameManager : MonoBehaviour
     void HandleLose()
     {
         _gameOverMenu.SetActive(true);
+        _gameOverMsg.text = "DERROTA!";
     }
 
     void HandleWin()
     {
-        
+        _gameOverMenu.SetActive(true);
+        _gameOverMsg.text = "VITÓRIA!";
     }
 
     public void OnTileClicked(int x, int y, TileView tileView, bool isRightClick)
@@ -149,6 +155,11 @@ public class GameManager : MonoBehaviour
     {
         Destroy(GameManager.Instance.gameObject);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void CheckForVictory(int revealedTiles)
+    {
+        if(revealedTiles + _config.MineCount == _totalTiles) SetState(GameState.Win);
     }
 
 }

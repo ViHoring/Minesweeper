@@ -15,7 +15,7 @@ public class TileView : MonoBehaviour
     int _y;
     public int X => _x;
     public int Y => _y;
-    bool _isFliped;
+    bool _isRevealed; public bool IsRevealed => _isRevealed;
     bool _isAnimating;
     bool _isFlaged;
     bool _isFlag;
@@ -51,13 +51,13 @@ public class TileView : MonoBehaviour
 
     public void OnClick()
     {
-        if(_isFliped || _isAnimating || _isFlaged || _isFlag) return;
+        if(_isRevealed || _isAnimating || _isFlaged || _isFlag) return;
         GameManager.Instance.OnTileClicked(_x, _y, this, false);
     }
 
     public void OnRightClick()
     {
-        if (_isFliped || _isAnimating) return;
+        if (_isRevealed || _isAnimating) return;
 
         // Se este objeto é a própria flag overlay, remover a flag do tile base
         if (_isFlag)
@@ -81,7 +81,7 @@ public class TileView : MonoBehaviour
 
     void Highlight(bool isHovering)
     {
-        if(_isFliped || _isAnimating || _isFlaged || _isFlag) return;
+        if(_isRevealed || _isAnimating || _isFlaged || _isFlag) return;
         if (isHovering)
         {
             transform.localScale = _originalScale * 1.1f;
@@ -96,8 +96,8 @@ public class TileView : MonoBehaviour
 
     public void Click()
     {
-        if (_isAnimating || _isFliped) return;
-        _isFliped = true;
+        if (_isAnimating || _isRevealed) return;
+        _isRevealed = true;
         OnRevealFinished?.Invoke(this);
         StartCoroutine(ClickRoutine());
     }
