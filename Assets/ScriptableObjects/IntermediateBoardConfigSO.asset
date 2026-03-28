@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08c7e6f20ffc8f7449d7074577bb8915, type: 3}
   m_Name: IntermediateBoardConfigSO
   m_EditorClassIdentifier: Assembly-CSharp::BoardConfigSO
+  Difficulty: 2
+  CameraSize: 8.75
+  HUDEdgesSize: 120
   Width: 16
   Height: 16
   MineCount: 40

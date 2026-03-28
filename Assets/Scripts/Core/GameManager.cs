@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text _gameOverMsg;
     [SerializeField] Camera _camera;
     [SerializeField] BoardController _boardController;
+    [SerializeField] GameObject _hudEdgeR;
+    [SerializeField] GameObject _hudEdgeL;
     bool _isFirstClick = true;
     BoardConfigSO _config;
     int _totalTiles;
@@ -75,8 +77,13 @@ public class GameManager : MonoBehaviour
     {
         _config = config;
         SetState(GameState.Playing);
-        float size = config.Height * 0.5f + 0.75f;
-        _camera.orthographicSize = size;
+        _camera.orthographicSize = _config.CameraSize;
+        
+        RectTransform rect = _hudEdgeL.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(_config.HUDEdgesSize, rect.sizeDelta.y);
+        rect = _hudEdgeR.GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(_config.HUDEdgesSize, rect.sizeDelta.y);
+        
         _boardController.CreateBlankBoard(config.Width, config.Height);
         _totalTiles = config.Width * config.Height;
         //Espera primeiro click
@@ -160,6 +167,16 @@ public class GameManager : MonoBehaviour
     public void CheckForVictory(int revealedTiles)
     {
         if(revealedTiles + _config.MineCount == _totalTiles) SetState(GameState.Win);
+    }
+
+    public void Pause()
+    {
+        
+    }
+
+    public void Hide()
+    {
+        
     }
 
 }

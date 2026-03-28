@@ -4,6 +4,9 @@ using UnityEngine;
 public class BoardConfigSO : ScriptableObject
 {
     //Guarda configurações da dificuldade do jogo
+    public int Difficulty;
+    public float CameraSize;
+    public float HUDEdgesSize;
     public int Width;
     public int Height;
     public int MineCount;
