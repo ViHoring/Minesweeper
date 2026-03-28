@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: IntermediateBoardConfigSO
   m_EditorClassIdentifier: Assembly-CSharp::BoardConfigSO
   Difficulty: 2
+  DifficultyText: "Intermedi\xE1rio"
   CameraSize: 8.75
   HUDEdgesSize: 120
   Width: 16

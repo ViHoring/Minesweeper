@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: EasyBoardConfigSO
   m_EditorClassIdentifier: Assembly-CSharp::BoardConfigSO
   Difficulty: 1
+  DifficultyText: "F\xE1cil"
   CameraSize: 4.75
   HUDEdgesSize: 125
   Width: 8

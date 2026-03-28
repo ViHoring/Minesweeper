@@ -1,9 +1,12 @@
 using System;
+using System.Collections;
+using System.Numerics;
 using TMPro;
 using Unity.VectorGraphics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,11 +24,21 @@ public class GameManager : MonoBehaviour
     [SerializeField] BoardController _boardController;
     [SerializeField] GameObject _hudEdgeR;
     [SerializeField] GameObject _hudEdgeL;
-    [SerializeField] TMP_Text _timerText;
+    [SerializeField] TMP_Text _timerTextHUD;
+    [SerializeField] TMP_Text _timerTextFinale;
+    [SerializeField] GameObject _timerFinale;
+    [SerializeField] TMP_Text _difficultyText;
+    [SerializeField] GameObject _difficultyObject;
+    [SerializeField] GameObject _pauseButton;
+    [SerializeField] GameObject _showGameOverButton;
+    [SerializeField] TMP_Text _minesMarkedTracker;
+    [SerializeField] TMP_Text _minesTotalNumber;
+    [SerializeField] HUDAnimationHandler _hudAnimatorHandler;
     bool _isFirstClick = true;
     BoardConfigSO _config;
     int _totalTiles;
     float _elapsedTime;
+    bool _chillMode;
     public GameState CurrentState { get; private set; }
     public event Action<GameState> OnGameStateChanged;
     public static GameManager Instance { get; private set; }
@@ -90,13 +103,14 @@ public class GameManager : MonoBehaviour
         _camera.orthographicSize = _config.CameraSize;
         
         RectTransform rect = _hudEdgeL.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(_config.HUDEdgesSize, rect.sizeDelta.y);
+        rect.sizeDelta = new UnityEngine.Vector2(_config.HUDEdgesSize, rect.sizeDelta.y);
         rect = _hudEdgeR.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(_config.HUDEdgesSize, rect.sizeDelta.y);
+        rect.sizeDelta = new UnityEngine.Vector2(_config.HUDEdgesSize, rect.sizeDelta.y);
         
         _boardController.CreateBlankBoard(config.Width, config.Height);
         _totalTiles = config.Width * config.Height;
-        //Espera primeiro click
+        _difficultyText.text = _config.DifficultyText;
+        _minesTotalNumber.text = _config.MineCount.ToString();
         _elapsedTime = 0f;
         UpdateTimerUI();
     }
@@ -123,12 +137,28 @@ public class GameManager : MonoBehaviour
 
     void HandleLose()
     {
+        _timerTextFinale.text = _timerTextHUD.text;
+        if(_chillMode)
+        {
+            _timerFinale.SetActive(false);
+            UnityEngine.Vector3 pos = _difficultyObject.transform.position;
+            pos.y = 45.5f;
+            _difficultyObject.transform.position = pos;
+        }
         _gameOverMenu.SetActive(true);
         _gameOverMsg.text = "DERROTA!";
     }
 
     void HandleWin()
     {
+        _timerTextFinale.text = _timerTextHUD.text;
+        if(_chillMode)
+        {
+            _timerFinale.SetActive(false);
+            UnityEngine.Vector3 pos = _difficultyObject.transform.position;
+            pos.y = 45.5f;
+            _difficultyObject.transform.position = pos;
+        }         
         _gameOverMenu.SetActive(true);
         _gameOverMsg.text = "VITÓRIA!";
     }
@@ -189,18 +219,13 @@ public class GameManager : MonoBehaviour
         SetState(GameState.Playing);
     }
 
-    public void Hide()
-    {
-        
-    }
-
     void UpdateTimerUI()
     {
         int totalSeconds = Mathf.FloorToInt(_elapsedTime);
         int minutes = totalSeconds / 60;
         int seconds = totalSeconds % 60;
 
-        _timerText.text = $"{minutes:00}:{seconds:00}";
+        _timerTextHUD.text = $"{minutes:00}:{seconds:00}";
     }
 
     public void QuitGame()
@@ -210,6 +235,35 @@ public class GameManager : MonoBehaviour
         #else
             Application.Quit();
         #endif
+    }
+
+    public void HideGameOverScreen()
+    {
+        _gameOverMenu.SetActive(false);
+        _pauseButton.SetActive(false);
+        _showGameOverButton.SetActive(true);
+    }
+
+    public void ShowGameOverScreen()
+    {
+        _gameOverMenu.SetActive(true);
+        _pauseButton.SetActive(true);
+        _showGameOverButton.SetActive(false);
+    }
+
+    public void UpdateBumbsMarked(int bombsMarked)
+    {
+        _minesMarkedTracker.text = bombsMarked.ToString();
+    }
+
+    public void ChillToggle()
+    {
+        _chillMode = !_chillMode;
+    }
+
+    public bool GetChillModeInfo()
+    {
+        return _chillMode;
     }
 
 }

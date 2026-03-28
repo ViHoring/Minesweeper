@@ -11,6 +11,7 @@ public class BoardController : MonoBehaviour
     GameObject[,] _boardObject;
     int _width;
     int _height;
+    int _bombTracker;
 
     public void CreateBlankBoard(int width, int height)
     {
@@ -18,6 +19,7 @@ public class BoardController : MonoBehaviour
         _height = height;
         _board = new TileModel[_width, _height];
         _boardView.CreateBlankBoard(_board);
+        _bombTracker = 0;
     }
 
     public void GenerateBoard(int x, int y, BoardConfigSO config)
@@ -32,11 +34,15 @@ public class BoardController : MonoBehaviour
     public void ChangeToFlag(TileView tileView)
     {
         _boardView.ChangeToFlag(tileView);
+        _bombTracker++;
+        GameManager.Instance.UpdateBumbsMarked(_bombTracker);
     }
 
     public void RemoveFlag(TileView tileView)
     {
         _boardView.RemoveFlag(tileView);
+        _bombTracker--;
+        GameManager.Instance.UpdateBumbsMarked(_bombTracker);
     }
 
     void SubscribeToTilesEvents()

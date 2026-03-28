@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: HardBoardConfigSO
   m_EditorClassIdentifier: Assembly-CSharp::BoardConfigSO
   Difficulty: 3
+  DifficultyText: "Dif\xEDcil"
   CameraSize: 10
   HUDEdgesSize: 40
   Width: 30
