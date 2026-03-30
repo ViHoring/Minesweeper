@@ -7,6 +7,7 @@ public class TileView : MonoBehaviour
     //Representação visual do tile
     //Controla animações
     
+    public event Action<TileView> OnTileClicked;
     public event Action<TileView> OnRevealFinished;
     Vector3 _originalScale;
     Renderer _renderer;
@@ -98,7 +99,7 @@ public class TileView : MonoBehaviour
     {
         if (_isAnimating || _isRevealed) return;
         _isRevealed = true;
-        OnRevealFinished?.Invoke(this);
+        OnTileClicked?.Invoke(this);
         StartCoroutine(ClickRoutine());
     }
 
@@ -182,6 +183,7 @@ public class TileView : MonoBehaviour
         }
 
         transform.localScale = originalScale;
+        OnRevealFinished?.Invoke(this);
     }
 
     public void SetFlagged(bool flagged)

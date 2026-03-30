@@ -22,8 +22,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text _gameOverMsg;
     [SerializeField] Camera _camera;
     [SerializeField] BoardController _boardController;
-    [SerializeField] GameObject _hudEdgeR;
-    [SerializeField] GameObject _hudEdgeL;
     [SerializeField] TMP_Text _timerTextHUD;
     [SerializeField] TMP_Text _timerTextFinale;
     [SerializeField] GameObject _timerFinale;
@@ -73,6 +71,10 @@ public class GameManager : MonoBehaviour
                 HandlePaused();
                 break;
 
+            case GameState.GameOver:
+                HandleGameOver();
+                break;
+
             case GameState.Lose:
                 HandleLose();
                 break;
@@ -102,10 +104,8 @@ public class GameManager : MonoBehaviour
         SetState(GameState.Playing);
         _camera.orthographicSize = _config.CameraSize;
         
-        RectTransform rect = _hudEdgeL.GetComponent<RectTransform>();
-        rect.sizeDelta = new UnityEngine.Vector2(_config.HUDEdgesSize, rect.sizeDelta.y);
-        rect = _hudEdgeR.GetComponent<RectTransform>();
-        rect.sizeDelta = new UnityEngine.Vector2(_config.HUDEdgesSize, rect.sizeDelta.y);
+        Transform transform = _camera.GetComponent<Transform>();
+        transform.localPosition = new UnityEngine.Vector3(transform.localPosition.x, _config.CameraPosition, transform.localPosition.z);
         
         _boardController.CreateBlankBoard(config.Width, config.Height);
         _totalTiles = config.Width * config.Height;
@@ -135,6 +135,11 @@ public class GameManager : MonoBehaviour
         _pauseMenu.SetActive(true);  
     }
 
+    void HandleGameOver()
+    {
+        _gameOverMenu.SetActive(true);
+    }
+
     void HandleLose()
     {
         _timerTextFinale.text = _timerTextHUD.text;
@@ -145,7 +150,6 @@ public class GameManager : MonoBehaviour
             pos.y = 45.5f;
             _difficultyObject.transform.position = pos;
         }
-        _gameOverMenu.SetActive(true);
         _gameOverMsg.text = "DERROTA!";
     }
 
@@ -158,8 +162,7 @@ public class GameManager : MonoBehaviour
             UnityEngine.Vector3 pos = _difficultyObject.transform.position;
             pos.y = 45.5f;
             _difficultyObject.transform.position = pos;
-        }         
-        _gameOverMenu.SetActive(true);
+        }
         _gameOverMsg.text = "VITÓRIA!";
     }
 
@@ -211,12 +214,17 @@ public class GameManager : MonoBehaviour
 
     public void Pause()
     {
-        SetState(GameState.Paused);
+        if(CurrentState == GameState.Playing) SetState(GameState.Paused);
     }
 
     public void Unpause()
     {
-        SetState(GameState.Playing);
+        if(CurrentState == GameState.Paused) SetState(GameState.Playing);
+    }
+
+    public void GameOver()
+    {
+        SetState(GameState.GameOver);
     }
 
     void UpdateTimerUI()

@@ -10,7 +10,7 @@ public class HUDAnimationHandler : MonoBehaviour
     Vector3 _originalScale;
     [SerializeField] Button _hideHUDButton;
 
-    void Awake()
+    void Start()
     {
         _originalScale = transform.localScale;
         if(GameManager.Instance.GetChillModeInfo())
@@ -49,18 +49,19 @@ public class HUDAnimationHandler : MonoBehaviour
 
     IEnumerator ShowHudAnimation()
     {
-        Vector3 downScale = _originalScale * 1;
+        Vector3 startScale = Vector3.zero;
+        Vector3 endScale = _originalScale;
         float duration = 0.3f;
         float time = 0f;
 
         while (time < duration)
         {
-            transform.localScale = Vector3.Lerp(_originalScale, downScale, time / duration);
+            transform.localScale = Vector3.Lerp(startScale, endScale, time / duration);
 
             time += Time.deltaTime;
             yield return null;
         }
 
-        transform.localScale = downScale;
+        transform.localScale = endScale;
     }
 }

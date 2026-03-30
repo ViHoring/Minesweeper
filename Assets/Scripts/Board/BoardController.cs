@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class BoardController : MonoBehaviour
@@ -12,6 +13,7 @@ public class BoardController : MonoBehaviour
     int _width;
     int _height;
     int _bombTracker;
+    bool _gameFinished;
 
     public void CreateBlankBoard(int width, int height)
     {
@@ -56,15 +58,31 @@ public class BoardController : MonoBehaviour
 
                     if (tileView == null) continue;
 
-                    tileView.OnRevealFinished -= HandleTileRevealFinished;
-                    tileView.OnRevealFinished += HandleTileRevealFinished;
+                    tileView.OnTileClicked -= HandleOnTileClicked;
+                    tileView.OnTileClicked += HandleOnTileClicked;
+                    tileView.OnRevealFinished -= HandleOnRevealFinished;
+                    tileView.OnRevealFinished += HandleOnRevealFinished;
                 }
                 
             }
         }
     }
 
-    void HandleTileRevealFinished(TileView tileView)
+    void HandleOnRevealFinished(TileView tileView)
+    {
+        if(GameManager.Instance.CurrentState == GameState.Win || GameManager.Instance.CurrentState == GameState.Lose)
+        {
+            StartCoroutine(StartBoardAnimation());
+        }
+    }
+
+    IEnumerator StartBoardAnimation()
+    {
+        yield return new WaitForSeconds(0.6f);
+        GameManager.Instance.GameOver();
+    }
+
+    void HandleOnTileClicked(TileView tileView)
     {
         int x = tileView.X;
         int y = tileView.Y;

@@ -8,7 +8,7 @@ public class BoardConfigSO : ScriptableObject
     public int Difficulty;
     public string DifficultyText;
     public float CameraSize;
-    public float HUDEdgesSize;
+    public float CameraPosition;
     public int Width;
     public int Height;
     public int MineCount;
