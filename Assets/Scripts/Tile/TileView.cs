@@ -18,8 +18,8 @@ public class TileView : MonoBehaviour
     public int Y => _y;
     bool _isRevealed; public bool IsRevealed => _isRevealed;
     bool _isAnimating;
-    bool _isFlaged;
-    bool _isFlag;
+    bool _isFlaged; public bool IsFlaged => _isFlaged;
+    bool _isFlag; public bool IsFlag => _isFlag;
     bool _isBomb; public bool IsBomb => _isBomb;
     bool _isBlank; public bool IsBlank => _isBlank;
 
@@ -82,17 +82,35 @@ public class TileView : MonoBehaviour
 
     void Highlight(bool isHovering)
     {
-        if(_isRevealed || _isAnimating || _isFlaged || _isFlag) return;
+        if (_isRevealed || _isAnimating || _isFlaged || _isFlag) return;
+
+        StopAllCoroutines();
+
         if (isHovering)
         {
-            transform.localScale = _originalScale * 1.1f;
+            StartCoroutine(ScaleAnimation(_originalScale * 1.1f, 0.25f));
             _renderer.material.color = _originalColor * 1.2f;
         }
         else
         {
-            transform.localScale = _originalScale;
+            StartCoroutine(ScaleAnimation(_originalScale, 0.25f));
             _renderer.material.color = _originalColor;
         }
+    }
+
+    IEnumerator ScaleAnimation(Vector3 targetScale, float duration)
+    {
+        Vector3 startScale = transform.localScale;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            transform.localScale = Vector3.Lerp(startScale, targetScale, time / duration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.localScale = targetScale;
     }
 
     public void Click()

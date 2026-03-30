@@ -1,5 +1,6 @@
 using System;
 using Unity.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BoardView : MonoBehaviour
@@ -18,6 +19,7 @@ public class BoardView : MonoBehaviour
     [SerializeField] GameObject _tilePrefabBlank;
     [SerializeField] GameObject _tilePrefabBomb;
     [SerializeField] GameObject _tilePrefabFlag;
+    [SerializeField] GameObject _tilePrefabDefused;
     GameObject[,] _tiles;
     GameObject[,] _flags;
     int _width;
@@ -145,6 +147,19 @@ public class BoardView : MonoBehaviour
         if (baseTileView != null)
         {
             baseTileView.SetFlagged(false);
+        }
+    }
+
+    public void ChangeToDefused()
+    {
+        for(int i = 0; i < _width; i++)
+        {
+            for(int j = 0; j < _height; j++)
+            {
+                if(_flags[i, j] != null) Destroy(_flags[i, j]);
+                if(_tiles[i, j].GetComponent<TileView>().IsBomb == true) InstantiatePrefab(i, j, _tilePrefabDefused, false, false, false);
+                
+            }
         }
     }
 }

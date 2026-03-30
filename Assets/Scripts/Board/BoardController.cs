@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class BoardController : MonoBehaviour
 {
@@ -70,16 +71,47 @@ public class BoardController : MonoBehaviour
 
     void HandleOnRevealFinished(TileView tileView)
     {
-        if(GameManager.Instance.CurrentState == GameState.Win || GameManager.Instance.CurrentState == GameState.Lose)
+        if(_gameFinished) return;
+        if(GameManager.Instance.CurrentState == GameState.Win)
         {
-            StartCoroutine(StartBoardAnimation());
-        }
+            _gameFinished = true;
+            StartCoroutine(StartWinAnimation());
+        } 
+        if(GameManager.Instance.CurrentState == GameState.Lose)
+        {
+            _gameFinished = true;
+            StartCoroutine(StartLoseAnimation());
+        } 
     }
 
-    IEnumerator StartBoardAnimation()
+    IEnumerator StartWinAnimation()
     {
-        yield return new WaitForSeconds(0.6f);
+        OpenAllBoard(true);
+        yield return new WaitForSeconds(3f);
         GameManager.Instance.GameOver();
+    }
+
+    IEnumerator StartLoseAnimation()
+    {
+        OpenAllBoard(false);
+        yield return new WaitForSeconds(3f);
+        GameManager.Instance.GameOver();
+    }
+
+    void OpenAllBoard(bool won)
+    {
+        for(int i = 0; i < _width; i++)
+        {
+            for(int j = 0; j < _height; j++)
+            {
+                TileView tileView = _boardObject[i, j].GetComponent<TileView>();
+                if(!tileView.IsRevealed) tileView.OnClick();
+                if(won)
+                {
+                    _boardView.ChangeToDefused();
+                }
+            }
+        }
     }
 
     void HandleOnTileClicked(TileView tileView)
