@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -150,15 +151,19 @@ public class BoardView : MonoBehaviour
         }
     }
 
-    public void ChangeToDefused()
+    public IEnumerator ChangeToDefused(int mines)
     {
+        float duration = 4f / mines;
         for(int i = 0; i < _width; i++)
         {
             for(int j = 0; j < _height; j++)
             {
                 if(_flags[i, j] != null) Destroy(_flags[i, j]);
-                if(_tiles[i, j].GetComponent<TileView>().IsBomb == true) InstantiatePrefab(i, j, _tilePrefabDefused, false, false, false);
-                
+                if(_tiles[i, j].GetComponent<TileView>().IsMine == true)
+                {
+                    InstantiatePrefab(i, j, _tilePrefabDefused, false, false, false);
+                    yield return new WaitForSeconds(duration);
+                }
             }
         }
     }

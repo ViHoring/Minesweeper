@@ -7,10 +7,13 @@ public class TileInputHandler : MonoBehaviour
     
     Camera _camera;
     TileView _currentTile;
+    bool _waitForFreshLeftClick;
+    
 
     void Start()
     {
         _camera = Camera.main;
+        _waitForFreshLeftClick = true;
     }
 
     void Update()
@@ -35,8 +38,13 @@ public class TileInputHandler : MonoBehaviour
                     _currentTile.OnHoverEnter();
             }
 
-            if (tile != null && Input.GetMouseButtonDown(0))
+            if (tile != null && Input.GetMouseButtonUp(0))
             {
+                if(_waitForFreshLeftClick)
+                {
+                    _waitForFreshLeftClick = false;
+                    return;
+                }
                 tile.OnClick();
             }
 

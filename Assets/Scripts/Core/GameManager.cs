@@ -6,6 +6,7 @@ using Unity.VectorGraphics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -32,14 +33,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text _minesMarkedTracker;
     [SerializeField] TMP_Text _minesTotalNumber;
     [SerializeField] HUDAnimationHandler _hudAnimatorHandler;
+    bool _gameIsOver; public bool GameIsOver => _gameIsOver;
     bool _isFirstClick = true;
     BoardConfigSO _config;
     int _totalTiles;
     float _elapsedTime;
     bool _chillMode;
+    int _minesMarked;
     public GameState CurrentState { get; private set; }
     public event Action<GameState> OnGameStateChanged;
     public static GameManager Instance { get; private set; }
+
+    
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -142,19 +147,19 @@ public class GameManager : MonoBehaviour
 
     void HandleLose()
     {
-        _timerTextFinale.text = _timerTextHUD.text;
-        if(_chillMode)
-        {
-            _timerFinale.SetActive(false);
-            UnityEngine.Vector3 pos = _difficultyObject.transform.position;
-            pos.y = 45.5f;
-            _difficultyObject.transform.position = pos;
-        }
+        SetGameOverScreen();
         _gameOverMsg.text = "DERROTA!";
     }
 
     void HandleWin()
     {
+        SetGameOverScreen();
+        _gameOverMsg.text = "VITÓRIA!";
+    }
+
+    void SetGameOverScreen()
+    {
+        _gameIsOver = true;
         _timerTextFinale.text = _timerTextHUD.text;
         if(_chillMode)
         {
@@ -163,7 +168,6 @@ public class GameManager : MonoBehaviour
             pos.y = 45.5f;
             _difficultyObject.transform.position = pos;
         }
-        _gameOverMsg.text = "VITÓRIA!";
     }
 
     public void OnTileClicked(int x, int y, TileView tileView, bool isRightClick)
@@ -196,7 +200,7 @@ public class GameManager : MonoBehaviour
         _boardController.GenerateBoard(x, y, _config);
     }
 
-    public void BombClicked()
+    public void MineClicked()
     {
         SetState(GameState.Lose);
     }
@@ -209,7 +213,7 @@ public class GameManager : MonoBehaviour
 
     public void CheckForVictory(int revealedTiles)
     {
-        if(revealedTiles + _config.MineCount == _totalTiles) SetState(GameState.Win);
+        if(revealedTiles + _config.MineCount == _totalTiles && _minesMarked == _config.MineCount) SetState(GameState.Win);
     }
 
     public void Pause()
@@ -259,9 +263,10 @@ public class GameManager : MonoBehaviour
         _showGameOverButton.SetActive(false);
     }
 
-    public void UpdateBumbsMarked(int bombsMarked)
+    public void UpdateBumbsMarked(int minesMarked)
     {
-        _minesMarkedTracker.text = bombsMarked.ToString();
+        _minesMarked = minesMarked;
+        _minesMarkedTracker.text = minesMarked.ToString();
     }
 
     public void ChillToggle()

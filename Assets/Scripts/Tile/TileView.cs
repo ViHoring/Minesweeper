@@ -20,7 +20,7 @@ public class TileView : MonoBehaviour
     bool _isAnimating;
     bool _isFlaged; public bool IsFlaged => _isFlaged;
     bool _isFlag; public bool IsFlag => _isFlag;
-    bool _isBomb; public bool IsBomb => _isBomb;
+    bool _isMine; public bool IsMine => _isMine;
     bool _isBlank; public bool IsBlank => _isBlank;
 
     void Awake()
@@ -31,12 +31,12 @@ public class TileView : MonoBehaviour
         if (_renderer != null) _originalColor = _renderer.material.color;
     }
 
-    public void Init(int x, int y, bool isFlag, bool isBomb, bool isBlank)
+    public void Init(int x, int y, bool isFlag, bool isMine, bool isBlank)
     {
         _x = x;
         _y = y;
         _isFlag = isFlag;
-        _isBomb = isBomb;
+        _isMine = isMine;
         _isBlank = isBlank;
     }
 

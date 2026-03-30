@@ -13,8 +13,9 @@ public class BoardController : MonoBehaviour
     GameObject[,] _boardObject;
     int _width;
     int _height;
-    int _bombTracker;
-    bool _gameFinished;
+    int _mineTracker;
+    int _mineCount;
+    bool _firstTileRevealedOnGameOver = true;
 
     public void CreateBlankBoard(int width, int height)
     {
@@ -22,7 +23,7 @@ public class BoardController : MonoBehaviour
         _height = height;
         _board = new TileModel[_width, _height];
         _boardView.CreateBlankBoard(_board);
-        _bombTracker = 0;
+        _mineTracker = 0;
     }
 
     public void GenerateBoard(int x, int y, BoardConfigSO config)
@@ -30,6 +31,7 @@ public class BoardController : MonoBehaviour
         BoardGenerator generator = new BoardGenerator();
         int[,] boardRep = generator.GenerateBoard(x, y, config);
         _boardObject = _boardView.UpdateBoardVisual(boardRep);
+        _mineCount  = config.MineCount;
 
         SubscribeToTilesEvents();
     }
@@ -37,15 +39,16 @@ public class BoardController : MonoBehaviour
     public void ChangeToFlag(TileView tileView)
     {
         _boardView.ChangeToFlag(tileView);
-        _bombTracker++;
-        GameManager.Instance.UpdateBumbsMarked(_bombTracker);
+        _mineTracker++;
+        GameManager.Instance.UpdateBumbsMarked(_mineTracker);
+        BoardStatusUpdate();
     }
 
     public void RemoveFlag(TileView tileView)
     {
         _boardView.RemoveFlag(tileView);
-        _bombTracker--;
-        GameManager.Instance.UpdateBumbsMarked(_bombTracker);
+        _mineTracker--;
+        GameManager.Instance.UpdateBumbsMarked(_mineTracker);
     }
 
     void SubscribeToTilesEvents()
@@ -71,47 +74,45 @@ public class BoardController : MonoBehaviour
 
     void HandleOnRevealFinished(TileView tileView)
     {
-        if(_gameFinished) return;
-        if(GameManager.Instance.CurrentState == GameState.Win)
+        if(!GameManager.Instance.GameIsOver) return;
+        else if(_firstTileRevealedOnGameOver)
         {
-            _gameFinished = true;
-            StartCoroutine(StartWinAnimation());
-        } 
-        if(GameManager.Instance.CurrentState == GameState.Lose)
-        {
-            _gameFinished = true;
-            StartCoroutine(StartLoseAnimation());
-        } 
+            bool won = false;
+            if(GameManager.Instance.CurrentState == GameState.Win) won = true;
+            StartCoroutine(GameOverAnimation(won));
+        }
+        _firstTileRevealedOnGameOver = false;
     }
 
-    IEnumerator StartWinAnimation()
+    public void WinAnimationQA() //MÉTODO APENAS PARA QA
     {
-        OpenAllBoard(true);
-        yield return new WaitForSeconds(3f);
-        GameManager.Instance.GameOver();
+        StartCoroutine(GameOverAnimation(true));
     }
 
-    IEnumerator StartLoseAnimation()
+    public void LoseAnimationQA() //MÉTODO APENAS PARA QA
     {
-        OpenAllBoard(false);
-        yield return new WaitForSeconds(3f);
-        GameManager.Instance.GameOver();
+        StartCoroutine(GameOverAnimation(false));
     }
 
-    void OpenAllBoard(bool won)
+    IEnumerator GameOverAnimation(bool won)
     {
-        for(int i = 0; i < _width; i++)
+        if(!won)
         {
-            for(int j = 0; j < _height; j++)
+            for(int i = 0; i < _width; i++)
             {
-                TileView tileView = _boardObject[i, j].GetComponent<TileView>();
-                if(!tileView.IsRevealed) tileView.OnClick();
-                if(won)
+                for(int j = 0; j < _height; j++)
                 {
-                    _boardView.ChangeToDefused();
+                    TileView tileView = _boardObject[i, j].GetComponent<TileView>();
+                    if(!tileView.IsRevealed) 
+                    {
+                        tileView.OnClick();
+                    }
                 }
             }
         }
+        else yield return StartCoroutine(_boardView.ChangeToDefused(_mineCount));
+        yield return new WaitForSeconds(0.3f);
+        GameManager.Instance.GameOver();
     }
 
     void HandleOnTileClicked(TileView tileView)
@@ -119,7 +120,7 @@ public class BoardController : MonoBehaviour
         int x = tileView.X;
         int y = tileView.Y;
 
-        if(tileView.IsBomb) GameManager.Instance.BombClicked();
+        if(tileView.IsMine) GameManager.Instance.MineClicked();
         else if(tileView.IsBlank) BlankTileClicked(tileView);
         else BoardStatusUpdate();
     }
