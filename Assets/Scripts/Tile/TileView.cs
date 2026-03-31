@@ -64,6 +64,7 @@ public class TileView : MonoBehaviour
         if (_isFlag)
         {
             GameManager.Instance.RemoveFlag(this);
+            AudioManager.Instance.PlayFlagSound();
             return;
         }
 
@@ -76,6 +77,7 @@ public class TileView : MonoBehaviour
             return;
         }
 
+        AudioManager.Instance.PlayFlagSound();
         GameManager.Instance.OnTileClicked(_x, _y, this, true);
         _isFlaged = true;
     }
@@ -121,9 +123,17 @@ public class TileView : MonoBehaviour
         StartCoroutine(ClickRoutine());
     }
 
+    public void ClickOnGameOver()
+    {
+        if (_isAnimating || _isRevealed) return;
+        StartCoroutine(ClickRoutine());
+    }
+
     IEnumerator ClickRoutine()
     {
         _isAnimating = true;
+
+        AudioManager.Instance.PlayTileClickSound();
 
         yield return StartCoroutine(ClickAnimation());
         yield return StartCoroutine(FlipAnimation());

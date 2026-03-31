@@ -4,15 +4,15 @@ public class TileModel
     public int X { get; }
     public int Y { get; }
     public bool IsFlag { get; }
-    public bool IsBomb { get; }
+    public bool IsMine { get; }
     public bool IsBlank { get; }
 
-    public TileModel(int x, int y, bool isFlag, bool isBomb, bool isBlank)
+    public TileModel(int x, int y, bool isFlag, bool isMine, bool isBlank)
     {
         X = x;
         Y = y;
         IsFlag = isFlag;
-        IsBomb = isBomb;
+        IsMine = isMine;
         IsBlank = isBlank;
     }
 }

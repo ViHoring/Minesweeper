@@ -9,7 +9,7 @@ public class BoardController : MonoBehaviour
     //Atualiza Model
     //Atualiza View
     [SerializeField] BoardView _boardView;
-    TileModel[,] _board;
+    TileModel[,] _boardTileModel;
     GameObject[,] _boardObject;
     int _width;
     int _height;
@@ -21,8 +21,8 @@ public class BoardController : MonoBehaviour
     {
         _width = width;
         _height = height;
-        _board = new TileModel[_width, _height];
-        _boardView.CreateBlankBoard(_board);
+        _boardTileModel = new TileModel[_width, _height];
+        _boardView.CreateBlankBoard(_boardTileModel);
         _mineTracker = 0;
     }
 
@@ -42,6 +42,7 @@ public class BoardController : MonoBehaviour
         _mineTracker++;
         GameManager.Instance.UpdateBumbsMarked(_mineTracker);
         BoardStatusUpdate();
+        TryStartGameOverAnimation();
     }
 
     public void RemoveFlag(TileView tileView)
@@ -74,14 +75,18 @@ public class BoardController : MonoBehaviour
 
     void HandleOnRevealFinished(TileView tileView)
     {
-        if(!GameManager.Instance.GameIsOver) return;
-        else if(_firstTileRevealedOnGameOver)
-        {
-            bool won = false;
-            if(GameManager.Instance.CurrentState == GameState.Win) won = true;
-            StartCoroutine(GameOverAnimation(won));
-        }
+        TryStartGameOverAnimation();
+    }
+
+    void TryStartGameOverAnimation()
+    {
+        if (!GameManager.Instance.GameIsOver) return;
+        if (!_firstTileRevealedOnGameOver) return;
+
         _firstTileRevealedOnGameOver = false;
+
+        bool won = GameManager.Instance.CurrentState == GameState.Win;
+        StartCoroutine(GameOverAnimation(won));
     }
 
     public void WinAnimationQA() //MÉTODO APENAS PARA QA
@@ -96,21 +101,11 @@ public class BoardController : MonoBehaviour
 
     IEnumerator GameOverAnimation(bool won)
     {
-        if(!won)
+        if(won)
         {
-            for(int i = 0; i < _width; i++)
-            {
-                for(int j = 0; j < _height; j++)
-                {
-                    TileView tileView = _boardObject[i, j].GetComponent<TileView>();
-                    if(!tileView.IsRevealed) 
-                    {
-                        tileView.OnClick();
-                    }
-                }
-            }
+            yield return StartCoroutine(_boardView.ChangeToDefused(_mineCount));
         }
-        else yield return StartCoroutine(_boardView.ChangeToDefused(_mineCount));
+        else yield return new WaitForSeconds(0.3f); //CHAMAR ANIMAÇÃO DA MINA EXPLODINDO AQUI
         yield return new WaitForSeconds(0.3f);
         GameManager.Instance.GameOver();
     }

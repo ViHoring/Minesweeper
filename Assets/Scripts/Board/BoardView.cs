@@ -162,6 +162,7 @@ public class BoardView : MonoBehaviour
                 if(_tiles[i, j].GetComponent<TileView>().IsMine == true)
                 {
                     InstantiatePrefab(i, j, _tilePrefabDefused, false, false, false);
+                    //Animação?
                     yield return new WaitForSeconds(duration);
                 }
             }

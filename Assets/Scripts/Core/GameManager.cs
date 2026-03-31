@@ -147,12 +147,14 @@ public class GameManager : MonoBehaviour
 
     void HandleLose()
     {
+        AudioManager.Instance.PlayDefeatSound();
         SetGameOverScreen();
         _gameOverMsg.text = "DERROTA!";
     }
 
     void HandleWin()
     {
+        AudioManager.Instance.PlayVictorySound();
         SetGameOverScreen();
         _gameOverMsg.text = "VITÓRIA!";
     }
