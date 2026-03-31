@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class BoardController : MonoBehaviour
 {
@@ -40,7 +39,7 @@ public class BoardController : MonoBehaviour
     {
         _boardView.ChangeToFlag(tileView);
         _mineTracker++;
-        GameManager.Instance.UpdateBumbsMarked(_mineTracker);
+        GameManager.Instance.UpdateMinesMarked(_mineTracker);
         BoardStatusUpdate();
         TryStartGameOverAnimation();
     }
@@ -49,7 +48,7 @@ public class BoardController : MonoBehaviour
     {
         _boardView.RemoveFlag(tileView);
         _mineTracker--;
-        GameManager.Instance.UpdateBumbsMarked(_mineTracker);
+        GameManager.Instance.UpdateMinesMarked(_mineTracker);
     }
 
     void SubscribeToTilesEvents()

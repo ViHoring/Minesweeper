@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using Unity.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class BoardView : MonoBehaviour
@@ -18,7 +15,7 @@ public class BoardView : MonoBehaviour
     [SerializeField] GameObject _tilePrefab7;
     [SerializeField] GameObject _tilePrefab8;
     [SerializeField] GameObject _tilePrefabBlank;
-    [SerializeField] GameObject _tilePrefabBomb;
+    [SerializeField] GameObject _tilePrefabMine;
     [SerializeField] GameObject _tilePrefabFlag;
     [SerializeField] GameObject _tilePrefabDefused;
     GameObject[,] _tiles;
@@ -47,7 +44,7 @@ public class BoardView : MonoBehaviour
         }
     }
 
-    GameObject InstantiatePrefab(int x, int y, GameObject prefab, bool isFlag, bool isBomb, bool isBlank)
+    GameObject InstantiatePrefab(int x, int y, GameObject prefab, bool isFlag, bool isMine, bool isBlank)
     {
 
         Vector3 position = new Vector3(
@@ -66,7 +63,7 @@ public class BoardView : MonoBehaviour
         TileView tileView = tile.GetComponent<TileView>();
         if (tileView != null)
         {
-            tileView.Init(x, y, isFlag, isBomb, isBlank);
+            tileView.Init(x, y, isFlag, isMine, isBlank);
         }
 
         return tile;
@@ -74,8 +71,8 @@ public class BoardView : MonoBehaviour
 
     public GameObject[,] UpdateBoardVisual(int[,] boardRep)
     {
-        bool isBomb = false;
-        //Percorre a matriz boardRep, se -1 é bomba, 0 é blank, número maior que zero é número correspondente:
+        bool isMine = false;
+        //Percorre a matriz boardRep, se -1 é mina, 0 é blank, número maior que zero é número correspondente:
         for(int x = 0; x < _width; x++)
         {
             for(int y = 0; y < _height; y++)
@@ -83,13 +80,13 @@ public class BoardView : MonoBehaviour
                 //Se não for vazio:
                 if(boardRep[x, y] != 0)
                 {
-                    isBomb = false;
+                    isMine = false;
                     Destroy(_tiles[x, y]);
                     GameObject prefab = GetPrefab(boardRep[x, y]);
 
-                    if(boardRep[x, y] == -1) isBomb = true;
+                    if(boardRep[x, y] == -1) isMine = true;
 
-                    _tiles[x, y] = InstantiatePrefab(x, y, prefab, false, isBomb, false);
+                    _tiles[x, y] = InstantiatePrefab(x, y, prefab, false, isMine, false);
                 }
             }
         }
@@ -98,7 +95,7 @@ public class BoardView : MonoBehaviour
 
     GameObject GetPrefab(int value)
     {
-        if (value == -1) return _tilePrefabBomb;
+        if (value == -1) return _tilePrefabMine;
         if (value == 0) return _tilePrefabBlank;
 
         switch (value)

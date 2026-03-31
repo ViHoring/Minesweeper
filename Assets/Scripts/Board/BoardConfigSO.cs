@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BoardConfigSO", menuName = "Scriptable Objects/BoardConfigSO")]

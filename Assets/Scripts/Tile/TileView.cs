@@ -18,7 +18,7 @@ public class TileView : MonoBehaviour
     public int Y => _y;
     bool _isRevealed; public bool IsRevealed => _isRevealed;
     bool _isAnimating;
-    bool _isFlaged; public bool IsFlaged => _isFlaged;
+    bool _isFlagged; public bool IsFlagged => _isFlagged;
     bool _isFlag; public bool IsFlag => _isFlag;
     bool _isMine; public bool IsMine => _isMine;
     bool _isBlank; public bool IsBlank => _isBlank;
@@ -52,7 +52,7 @@ public class TileView : MonoBehaviour
 
     public void OnClick()
     {
-        if(_isRevealed || _isAnimating || _isFlaged || _isFlag) return;
+        if(_isRevealed || _isAnimating || _isFlagged || _isFlag) return;
         GameManager.Instance.OnTileClicked(_x, _y, this, false);
     }
 
@@ -70,21 +70,21 @@ public class TileView : MonoBehaviour
 
         OnHoverExit();
 
-        if (_isFlaged)
+        if (_isFlagged)
         {
             GameManager.Instance.RemoveFlag(this);
-            _isFlaged = false;
+            _isFlagged = false;
             return;
         }
 
         AudioManager.Instance.PlayFlagSound();
         GameManager.Instance.OnTileClicked(_x, _y, this, true);
-        _isFlaged = true;
+        _isFlagged = true;
     }
 
     void Highlight(bool isHovering)
     {
-        if (_isRevealed || _isAnimating || _isFlaged || _isFlag) return;
+        if (_isRevealed || _isAnimating || _isFlagged || _isFlag) return;
 
         StopAllCoroutines();
 
@@ -216,7 +216,7 @@ public class TileView : MonoBehaviour
 
     public void SetFlagged(bool flagged)
     {
-        _isFlaged = flagged;
+        _isFlagged = flagged;
     }
 
 }

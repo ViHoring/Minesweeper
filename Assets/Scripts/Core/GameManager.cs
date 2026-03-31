@@ -1,13 +1,7 @@
 using System;
-using System.Collections;
-using System.Numerics;
 using TMPro;
-using Unity.VectorGraphics;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Tilemaps;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -265,7 +259,7 @@ public class GameManager : MonoBehaviour
         _showGameOverButton.SetActive(false);
     }
 
-    public void UpdateBumbsMarked(int minesMarked)
+    public void UpdateMinesMarked(int minesMarked)
     {
         _minesMarked = minesMarked;
         _minesMarkedTracker.text = minesMarked.ToString();

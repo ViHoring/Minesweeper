@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Unity.Burst.CompilerServices;
 
 public class BoardGenerator
 {
@@ -30,7 +29,7 @@ public class BoardGenerator
         Shuffle();
         //Pega as primeiras N (determinado pela dificuldade) positions e coloca -1 nelas na matriz "_boardRep":
         PutMinesInMatrix();
-        //Percorre a matriz e coloca o numero de bombas vizinhas de cada posição:
+        //Percorre a matriz e coloca o numero de minas vizinhas de cada posição:
         PutNumbersInMatrix();
         //Retorna a matriz:
         return _boardRep;
@@ -112,7 +111,7 @@ public class BoardGenerator
             {
                 if (_boardRep[i, j] == -1) continue;
                 int minesProx = 0;
-                //Para  cada posição, tenho que procurar por bombas nas 6 posições adjacentes:
+                //Para  cada posição, tenho que procurar por minas nas 6 posições adjacentes:
                 for(int n = -1; n <= 1; n++)
                 {
                     for(int m = -1; m <= 1; m++)
@@ -121,7 +120,7 @@ public class BoardGenerator
                         int mj = j + m;
                         if (ni >= 0 && ni < _width && mj >= 0  && mj < _height)
                         {
-                            //Está dentro  do Board, então testa por bomba:
+                            //Está dentro  do Board, então testa por mina:
                             if(_boardRep[ni, mj] == -1) minesProx++;
                         }
                     }
