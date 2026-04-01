@@ -182,4 +182,59 @@ public class BoardView : MonoBehaviour
 
         Instantiate(_mineExplosionFXPrefab, position, Quaternion.identity);
     }
+
+    public GameObject[,] RebuildBoard(int[,] boardRep)
+    {
+        ClearBoardVisuals();
+
+        _width = boardRep.GetLength(0);
+        _height = boardRep.GetLength(1);
+
+        _offsetX = _width / 2f;
+        _offsetY = _height / 2f;
+
+        _tiles = new GameObject[_width, _height];
+        _flags = new GameObject[_width, _height];
+
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                bool isMine = boardRep[x, y] == -1;
+                bool isBlank = boardRep[x, y] == 0;
+
+                GameObject prefab = GetPrefab(boardRep[x, y]);
+                _tiles[x, y] = InstantiatePrefab(x, y, prefab, false, isMine, isBlank);
+            }
+        }
+
+        return _tiles;
+    }
+
+    void ClearBoardVisuals()
+    {
+        if (_tiles != null)
+        {
+            for (int x = 0; x < _tiles.GetLength(0); x++)
+            {
+                for (int y = 0; y < _tiles.GetLength(1); y++)
+                {
+                    if (_tiles[x, y] != null)
+                        Destroy(_tiles[x, y]);
+                }
+            }
+        }
+
+        if (_flags != null)
+        {
+            for (int x = 0; x < _flags.GetLength(0); x++)
+            {
+                for (int y = 0; y < _flags.GetLength(1); y++)
+                {
+                    if (_flags[x, y] != null)
+                        Destroy(_flags[x, y]);
+                }
+            }
+        }
+    }
 }

@@ -10,6 +10,7 @@ public class BoardController : MonoBehaviour
     [SerializeField] BoardView _boardView;
     TileModel[,] _boardTileModel;
     GameObject[,] _boardObject;
+    int[,] _boardRep;
     int _width;
     int _height;
     int _mineTracker;
@@ -28,8 +29,8 @@ public class BoardController : MonoBehaviour
     public void GenerateBoard(int x, int y, BoardConfigSO config)
     {
         BoardGenerator generator = new BoardGenerator();
-        int[,] boardRep = generator.GenerateBoard(x, y, config);
-        _boardObject = _boardView.UpdateBoardVisual(boardRep);
+        _boardRep = generator.GenerateBoard(x, y, config);
+        _boardObject = _boardView.UpdateBoardVisual(_boardRep);
         _mineCount  = config.MineCount;
 
         SubscribeToTilesEvents();
@@ -152,5 +153,20 @@ public class BoardController : MonoBehaviour
     public void PlayLoseFX(TileView tileView)
     {
         _boardView.SpawnMineExplosionFX(tileView);
+    }
+
+    public void ResetBoard()
+    {
+        if (_boardRep == null)
+        {
+            Debug.LogWarning("Não existe board salvo para repetir.");
+            return;
+        }
+
+        _mineTracker = 0;
+        _firstTileRevealedOnGameOver = true;
+
+        _boardObject = _boardView.RebuildBoard(_boardRep);
+        SubscribeToTilesEvents();
     }
 }

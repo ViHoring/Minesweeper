@@ -19,21 +19,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] BoardController _boardController;
     [SerializeField] TMP_Text _timerTextHUD;
     [SerializeField] TMP_Text _timerTextFinale;
-    [SerializeField] GameObject _timerFinale;
     [SerializeField] TMP_Text _difficultyText;
-    [SerializeField] GameObject _difficultyObject;
     [SerializeField] GameObject _pauseButton;
     [SerializeField] GameObject _showGameOverButton;
     [SerializeField] TMP_Text _minesMarkedTracker;
     [SerializeField] TMP_Text _minesTotalNumber;
-    [SerializeField] HUDAnimationHandler _hudAnimatorHandler;
     bool _gameIsOver; public bool GameIsOver => _gameIsOver;
     bool _isFirstClick = true;
     BoardConfigSO _config;
     int _totalTiles;
     float _elapsedTime;
-    bool _chillMode;
     int _minesMarked;
+    bool _retrying;
     public GameState CurrentState { get; private set; }
     public event Action<GameState> OnGameStateChanged;
     public static GameManager Instance { get; private set; }
@@ -104,7 +101,7 @@ public class GameManager : MonoBehaviour
         _camera.orthographicSize = _config.CameraSize;
         
         Transform transform = _camera.GetComponent<Transform>();
-        transform.localPosition = new UnityEngine.Vector3(transform.localPosition.x, _config.CameraPosition, transform.localPosition.z);
+        transform.localPosition = new Vector3(transform.localPosition.x, _config.CameraPosition, transform.localPosition.z);
         
         _boardController.CreateBlankBoard(config.Width, config.Height);
         _totalTiles = config.Width * config.Height;
@@ -158,13 +155,6 @@ public class GameManager : MonoBehaviour
     {
         _gameIsOver = true;
         _timerTextFinale.text = _timerTextHUD.text;
-        if(_chillMode)
-        {
-            _timerFinale.SetActive(false);
-            UnityEngine.Vector3 pos = _difficultyObject.transform.position;
-            pos.y = 45.5f;
-            _difficultyObject.transform.position = pos;
-        }
     }
 
     public void OnTileClicked(int x, int y, TileView tileView, bool isRightClick)
@@ -267,14 +257,22 @@ public class GameManager : MonoBehaviour
         _minesMarkedTracker.text = minesMarked.ToString();
     }
 
-    public void ChillToggle()
+    public void RetrySameBoard()
     {
-        _chillMode = !_chillMode;
-    }
+        _gameIsOver = false;
+        _isFirstClick = false; // importante: não queremos gerar outro board
+        _elapsedTime = 0f;
+        _minesMarked = 0;
 
-    public bool GetChillModeInfo()
-    {
-        return _chillMode;
+        UpdateTimerUI();
+        UpdateMinesMarked(0);
+
+        _gameOverMenu.SetActive(false);
+        _pauseButton.SetActive(true);
+        _showGameOverButton.SetActive(false);
+
+        SetState(GameState.Playing);
+        _boardController.ResetBoard();
     }
 
 }
