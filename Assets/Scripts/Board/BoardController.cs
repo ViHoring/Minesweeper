@@ -105,7 +105,7 @@ public class BoardController : MonoBehaviour
             yield return StartCoroutine(_boardView.ChangeToDefused(_mineCount));
         }
         else yield return new WaitForSeconds(0.3f); //CHAMAR ANIMAÇÃO DA MINA EXPLODINDO AQUI
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.6f);
         GameManager.Instance.GameOver();
     }
 
@@ -114,7 +114,7 @@ public class BoardController : MonoBehaviour
         int x = tileView.X;
         int y = tileView.Y;
 
-        if(tileView.IsMine) GameManager.Instance.MineClicked();
+        if(tileView.IsMine) GameManager.Instance.MineClicked(tileView);
         else if(tileView.IsBlank) BlankTileClicked(tileView);
         else BoardStatusUpdate();
     }
@@ -147,5 +147,10 @@ public class BoardController : MonoBehaviour
             }
         }
         GameManager.Instance.CheckForVictory(revealedTiles);
+    }
+
+    public void PlayLoseFX(TileView tileView)
+    {
+        _boardView.SpawnMineExplosionFX(tileView);
     }
 }

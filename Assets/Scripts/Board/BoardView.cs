@@ -18,6 +18,7 @@ public class BoardView : MonoBehaviour
     [SerializeField] GameObject _tilePrefabMine;
     [SerializeField] GameObject _tilePrefabFlag;
     [SerializeField] GameObject _tilePrefabDefused;
+    [SerializeField] GameObject _mineExplosionFXPrefab;
     GameObject[,] _tiles;
     GameObject[,] _flags;
     int _width;
@@ -164,5 +165,21 @@ public class BoardView : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void SpawnMineExplosionFX(TileView tileView)
+    {
+        if (_mineExplosionFXPrefab == null) return;
+
+        int x = tileView.X;
+        int y = tileView.Y;
+
+        Vector3 position = new Vector3(
+            x - _offsetX,
+            0.1f,
+            y - _offsetY
+        );
+
+        Instantiate(_mineExplosionFXPrefab, position, Quaternion.identity);
     }
 }

@@ -141,6 +141,7 @@ public class GameManager : MonoBehaviour
 
     void HandleLose()
     {
+        _camera.GetComponent<CameraShake>().Shake(0.2f, 0.15f);
         AudioManager.Instance.PlayDefeatSound();
         SetGameOverScreen();
         _gameOverMsg.text = "DERROTA!";
@@ -196,8 +197,9 @@ public class GameManager : MonoBehaviour
         _boardController.GenerateBoard(x, y, _config);
     }
 
-    public void MineClicked()
+    public void MineClicked(TileView tileView)
     {
+        _boardController.PlayLoseFX(tileView);
         SetState(GameState.Lose);
     }
 
