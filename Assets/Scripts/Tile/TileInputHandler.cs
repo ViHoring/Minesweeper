@@ -17,8 +17,7 @@ public class TileInputHandler : MonoBehaviour
 
     void Update()
     {
-        if (GameManager.Instance.CurrentState != GameState.Playing)
-            return;
+        if (GameManager.Instance.CurrentState != GameState.Playing) return;
 
         Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
 

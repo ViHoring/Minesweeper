@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 
 public class GameManager : MonoBehaviour
 {
@@ -25,12 +27,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text _minesMarkedTracker;
     [SerializeField] TMP_Text _minesTotalNumber;
     bool _gameIsOver; public bool GameIsOver => _gameIsOver;
-    bool _isFirstClick = true;
+    bool _isFirstClick = true; public bool IsFirstClick => _isFirstClick;
     BoardConfigSO _config;
     int _totalTiles;
     float _elapsedTime;
     int _minesMarked;
-    bool _retrying;
+    int _firstClickX;
+    int _firstClickY;
     public GameState CurrentState { get; private set; }
     public event Action<GameState> OnGameStateChanged;
     public static GameManager Instance { get; private set; }
@@ -78,6 +81,10 @@ public class GameManager : MonoBehaviour
             case GameState.Win:
                 HandleWin();
                 break;
+            
+            case GameState.Reseting:
+                StartCoroutine(HandleReseting());
+                break;
         }
     }
 
@@ -97,18 +104,21 @@ public class GameManager : MonoBehaviour
     public void StartGame(BoardConfigSO config)
     {
         _config = config;
-        SetState(GameState.Playing);
+
         _camera.orthographicSize = _config.CameraSize;
-        
         Transform transform = _camera.GetComponent<Transform>();
         transform.localPosition = new Vector3(transform.localPosition.x, _config.CameraPosition, transform.localPosition.z);
         
         _boardController.CreateBlankBoard(config.Width, config.Height);
+
         _totalTiles = config.Width * config.Height;
         _difficultyText.text = _config.DifficultyText;
         _minesTotalNumber.text = _config.MineCount.ToString();
+
         _elapsedTime = 0f;
         UpdateTimerUI();
+        
+        SetState(GameState.Playing);
     }
 
     void HandleMainMenu()
@@ -138,7 +148,7 @@ public class GameManager : MonoBehaviour
 
     void HandleLose()
     {
-        _camera.GetComponent<CameraShake>().Shake(0.2f, 0.15f);
+        _camera.GetComponent<CameraAnimation>().Shake(0.2f, 0.15f);
         AudioManager.Instance.PlayDefeatSound();
         SetGameOverScreen();
         _gameOverMsg.text = "DERROTA!";
@@ -149,6 +159,13 @@ public class GameManager : MonoBehaviour
         AudioManager.Instance.PlayVictorySound();
         SetGameOverScreen();
         _gameOverMsg.text = "VITÓRIA!";
+    }
+
+    IEnumerator HandleReseting()
+    {
+        //Impede player de fazer algo enquanto o board está sendo setado novamente
+        yield return new WaitForSeconds(0.5f);
+        SetState(GameState.Playing);
     }
 
     void SetGameOverScreen()
@@ -164,7 +181,7 @@ public class GameManager : MonoBehaviour
             if(isRightClick) return;
             _isFirstClick = false;
 
-            FirstClick(x, y);
+            FirstClick(x, y, tileView);
         }
         else
         {
@@ -173,8 +190,8 @@ public class GameManager : MonoBehaviour
                 _boardController.ChangeToFlag(tileView);
                 return;
             }
+            tileView.Click();
         }
-        tileView.Click();
     }
 
     public void RemoveFlag(TileView tileView)
@@ -182,9 +199,19 @@ public class GameManager : MonoBehaviour
         _boardController.RemoveFlag(tileView);
     }
 
-    void FirstClick(int x, int y)
+    void FirstClick(int x, int y, TileView tileView)
     {
+        _firstClickX = x;
+        _firstClickY = y;
+
         _boardController.GenerateBoard(x, y, _config);
+        StartCoroutine(FirstTileClicked(tileView));
+    }
+
+    IEnumerator FirstTileClicked(TileView tileView)
+    {
+        yield return StartCoroutine(_camera.GetComponent<CameraAnimation>().PlayPunchZoom());
+        tileView.Click();
     }
 
     public void MineClicked(TileView tileView)
@@ -260,7 +287,7 @@ public class GameManager : MonoBehaviour
     public void RetrySameBoard()
     {
         _gameIsOver = false;
-        _isFirstClick = false; // importante: não queremos gerar outro board
+        _isFirstClick = false; //não queremos gerar outro board
         _elapsedTime = 0f;
         _minesMarked = 0;
 
@@ -270,9 +297,13 @@ public class GameManager : MonoBehaviour
         _gameOverMenu.SetActive(false);
         _pauseButton.SetActive(true);
         _showGameOverButton.SetActive(false);
-
-        SetState(GameState.Playing);
+        
         _boardController.ResetBoard();
+        
+        //Abre primeiro tile clicado da primeira vez (quando o baord foi criado) + seus vizinhos
+        _boardController.RevealTileAt(_firstClickX, _firstClickY);
+
+        SetState(GameState.Reseting);
     }
 
 }

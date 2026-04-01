@@ -15,7 +15,7 @@ MonoBehaviour:
   Difficulty: 3
   DifficultyText: "Dif\xEDcil"
   CameraSize: 11
-  CameraPosition: 17.2
+  CameraPosition: 19.5
   Width: 30
   Height: 16
   MineCount: 99

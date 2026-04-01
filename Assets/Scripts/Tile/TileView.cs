@@ -59,6 +59,7 @@ public class TileView : MonoBehaviour
     public void OnRightClick()
     {
         if (_isRevealed || _isAnimating) return;
+        if (GameManager.Instance.IsFirstClick) return;
 
         // Se este objeto é a própria flag overlay, remover a flag do tile base
         if (_isFlag)

@@ -29,9 +29,44 @@ public class BoardController : MonoBehaviour
     public void GenerateBoard(int x, int y, BoardConfigSO config)
     {
         BoardGenerator generator = new BoardGenerator();
-        _boardRep = generator.GenerateBoard(x, y, config);
+
+        var mode = GameModeSelectorUI.GetSavedMode();
+        bool useSolver = mode == GameMode.NoLuck;
+
+        BoardSolver solver = useSolver ? new BoardSolver() : null;
+
+        _boardRep = null;
+
+        int attemptsUsed = 0;
+
+        if (!useSolver)
+        {
+            _boardRep = generator.GenerateBoard(x, y, config);
+            attemptsUsed = 1;
+        }
+        else
+        {
+            int maxAttempts = 100;
+            bool solved = false;
+
+            while (maxAttempts > 0 && !solved)
+            {
+                _boardRep = generator.GenerateBoard(x, y, config);
+                solved = solver.IsSolvableWithoutGuess(_boardRep, x, y);
+                maxAttempts--;
+                attemptsUsed++;
+            }
+
+            Debug.Log($"Board gerado em {attemptsUsed} tentativa(s). Solved = {solved}");
+
+            if (!solved)
+            {
+                Debug.LogWarning("Não foi possível gerar board resolvível dentro do limite de tentativas.");
+            }
+        }
+
         _boardObject = _boardView.UpdateBoardVisual(_boardRep);
-        _mineCount  = config.MineCount;
+        _mineCount = config.MineCount;
 
         SubscribeToTilesEvents();
     }
@@ -105,7 +140,7 @@ public class BoardController : MonoBehaviour
         {
             yield return StartCoroutine(_boardView.ChangeToDefused(_mineCount));
         }
-        else yield return new WaitForSeconds(0.3f); //CHAMAR ANIMAÇÃO DA MINA EXPLODINDO AQUI
+        else yield return new WaitForSeconds(0.3f);
         yield return new WaitForSeconds(0.6f);
         GameManager.Instance.GameOver();
     }
@@ -169,4 +204,17 @@ public class BoardController : MonoBehaviour
         _boardObject = _boardView.RebuildBoard(_boardRep);
         SubscribeToTilesEvents();
     }
+
+    public void RevealTileAt(int x, int y)
+    {
+        if (_boardObject == null) return;
+        if (x < 0 || x >= _width || y < 0 || y >= _height) return;
+
+        var tileView = _boardObject[x, y].GetComponent<TileView>();
+        if (tileView == null) return;
+
+        //tenho q usar Click() pq OnClick() passa pelo GameManager
+        tileView.Click();
+    }
+    
 }

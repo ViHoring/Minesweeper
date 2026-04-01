@@ -19,6 +19,7 @@ public class BoardView : MonoBehaviour
     [SerializeField] GameObject _tilePrefabFlag;
     [SerializeField] GameObject _tilePrefabDefused;
     [SerializeField] GameObject _mineExplosionFXPrefab;
+    [SerializeField] Transform _overlaysRoot;
     GameObject[,] _tiles;
     GameObject[,] _flags;
     int _width;
@@ -40,25 +41,24 @@ public class BoardView : MonoBehaviour
         {
             for (int y = 0; y < _height; y++)
             {         
-                _tiles[x, y] = InstantiatePrefab(x, y, _tilePrefabBlank, false, false, true);
+                _tiles[x, y] = InstantiatePrefab(x, y, _tilePrefabBlank, this.transform, false, false, true);
             }
         }
     }
 
-    GameObject InstantiatePrefab(int x, int y, GameObject prefab, bool isFlag, bool isMine, bool isBlank)
+    GameObject InstantiatePrefab(int x, int y, GameObject prefab, Transform parent, bool isFlag, bool isMine, bool isBlank)
     {
-
         Vector3 position = new Vector3(
-                    x - _offsetX,
-                    0,
-                    y - _offsetY
+            x - _offsetX,
+            0,
+            y - _offsetY
         );
 
         GameObject tile = Instantiate(
-            prefab,        
+            prefab,
             position,
             Quaternion.Euler(0, 180, 180),
-            transform
+            parent
         );
 
         TileView tileView = tile.GetComponent<TileView>();
@@ -87,7 +87,7 @@ public class BoardView : MonoBehaviour
 
                     if(boardRep[x, y] == -1) isMine = true;
 
-                    _tiles[x, y] = InstantiatePrefab(x, y, prefab, false, isMine, false);
+                    _tiles[x, y] = InstantiatePrefab(x, y, prefab, this.transform, false, isMine, false);
                 }
             }
         }
@@ -122,7 +122,7 @@ public class BoardView : MonoBehaviour
 
         if (_flags[x, y] != null) return;
 
-        _flags[x, y] = InstantiatePrefab(x, y, _tilePrefabFlag, true, false, false);
+        _flags[x, y] = InstantiatePrefab(x, y, _tilePrefabFlag, _overlaysRoot, true, false, false);
 
         TileView baseTileView = _tiles[x, y].GetComponent<TileView>();
         if (baseTileView != null)
@@ -151,7 +151,7 @@ public class BoardView : MonoBehaviour
 
     public IEnumerator ChangeToDefused(int mines)
     {
-        float duration = 4f / mines;
+        float duration = 3f / mines;
         for(int i = 0; i < _width; i++)
         {
             for(int j = 0; j < _height; j++)
@@ -159,8 +159,7 @@ public class BoardView : MonoBehaviour
                 if(_flags[i, j] != null) Destroy(_flags[i, j]);
                 if(_tiles[i, j].GetComponent<TileView>().IsMine == true)
                 {
-                    InstantiatePrefab(i, j, _tilePrefabDefused, false, false, false);
-                    //Animação?
+                    InstantiatePrefab(i, j, _tilePrefabDefused, _overlaysRoot, false, false, false);
                     yield return new WaitForSeconds(duration);
                 }
             }
@@ -204,7 +203,7 @@ public class BoardView : MonoBehaviour
                 bool isBlank = boardRep[x, y] == 0;
 
                 GameObject prefab = GetPrefab(boardRep[x, y]);
-                _tiles[x, y] = InstantiatePrefab(x, y, prefab, false, isMine, isBlank);
+                _tiles[x, y] = InstantiatePrefab(x, y, prefab, this.transform, false, isMine, isBlank);
             }
         }
 
@@ -224,17 +223,17 @@ public class BoardView : MonoBehaviour
                 }
             }
         }
+        _flags = null;
+        ClearOverlays();
+    }
 
-        if (_flags != null)
+    void ClearOverlays()
+    {
+        if (_overlaysRoot == null) return;
+
+        for (int i = _overlaysRoot.childCount - 1; i >= 0; i--)
         {
-            for (int x = 0; x < _flags.GetLength(0); x++)
-            {
-                for (int y = 0; y < _flags.GetLength(1); y++)
-                {
-                    if (_flags[x, y] != null)
-                        Destroy(_flags[x, y]);
-                }
-            }
+            Destroy(_overlaysRoot.GetChild(i).gameObject);
         }
     }
 }
